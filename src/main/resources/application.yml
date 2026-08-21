@@ -1,0 +1,23 @@
+server.port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/renovation_ledger
+    username: ledger
+    password: ledger
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+app:
+  jwt-secret: "change-me-to-32-bytes-min-secret-key!!"
+  jwt-days: 30
+  dev-sms-code: "000000"
+  dev-login-enabled: false
+  sms:
+    return-code-in-response: false
+    ttl-seconds: 300
+  wechat:
+    mp-app-id: ${WECHAT_MP_APP_ID:}
+    mp-secret: ${WECHAT_MP_SECRET:}
+    app-app-id: ${WECHAT_APP_APP_ID:}
+    app-secret: ${WECHAT_APP_SECRET:}

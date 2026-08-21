@@ -1,0 +1,16 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:h2:mem:ledger;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa.hibernate.ddl-auto: create-drop
+app:
+  jwt-secret: "test-secret-key-which-is-at-least-32b"
+  dev-sms-code: "000000"
+  dev-login-enabled: true
+  sms:
+    return-code-in-response: true
+    ttl-seconds: 300
