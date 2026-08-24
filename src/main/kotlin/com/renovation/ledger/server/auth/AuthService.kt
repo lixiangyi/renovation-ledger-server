@@ -42,7 +42,7 @@ class AuthService(
             }
             users.findById(existing.userId).orElseThrow()
         } else {
-            val created = users.save(UserEntity())
+            val created = users.save(UserEntity(nickname = DefaultNickname.fromSuffix(session.openid)))
             identities.save(
                 UserIdentityEntity(
                     userId = created.id,
@@ -99,7 +99,7 @@ class AuthService(
         val existing = users.findByPhone(phone)
         val user = existing ?: users.save(
             UserEntity(
-                nickname = phone.takeLast(4),
+                nickname = DefaultNickname.fromSuffix(phone),
                 phone = phone,
             ),
         )

@@ -36,6 +36,9 @@ class SmsLoginTest {
         val login2 = login("13800138000", send2.code!!)
         assertEquals(login1.userId, login2.userId)
         assertEquals("13800138000", login2.phone)
+        assertEquals("momo-8000", login1.nickname)
+        assertEquals("momo-8000", login2.nickname)
+        assertEquals(login1.nickname, login2.nickname)
     }
 
     @Test

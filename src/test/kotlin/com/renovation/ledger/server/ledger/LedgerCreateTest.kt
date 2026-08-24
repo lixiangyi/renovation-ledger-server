@@ -46,9 +46,13 @@ class LedgerCreateTest {
         val created = mapper.readValue<LedgerSnapshot>(json)
         assertEquals("新云账本", created.name)
         assertEquals(0, created.items.size)
-        mockMvc.get("/ledgers") {
+        val listJson = mockMvc.get("/ledgers") {
             header("Authorization", "Bearer $token")
-        }.andExpect { status { isOk() } }
+        }.andExpect { status { isOk() } }.andReturn().response.contentAsString
+        val list: List<LedgerSummaryDto> = mapper.readValue(listJson)
+        assertEquals(1, list.size)
+        assertEquals(created.id, list[0].id)
+        org.junit.jupiter.api.Assertions.assertTrue(list[0].createdAtEpochMs > 0)
     }
 
     @Test

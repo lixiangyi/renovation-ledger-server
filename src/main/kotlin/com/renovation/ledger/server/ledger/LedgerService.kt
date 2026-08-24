@@ -99,8 +99,9 @@ class LedgerService(
                 name = ledger.name,
                 role = member.role,
                 revision = ledger.revision,
+                createdAtEpochMs = ledger.createdAt.toEpochMilli(),
             )
-        }
+        }.sortedBy { it.createdAtEpochMs }
     }
 
     fun getLedger(id: String): LedgerSnapshot {

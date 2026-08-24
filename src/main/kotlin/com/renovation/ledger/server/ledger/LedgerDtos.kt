@@ -58,6 +58,7 @@ data class LedgerSummaryDto(
     val name: String,
     val role: String,
     val revision: Long,
+    val createdAtEpochMs: Long = 0,
 )
 
 data class LedgerSnapshot(
@@ -82,6 +83,14 @@ data class MemberDto(
 data class InviteCreatedDto(
     val id: String,
     val code: String,
+)
+
+data class InvitePreviewDto(
+    val code: String,
+    val ledgerId: String,
+    val ledgerName: String,
+    val ownerNickname: String,
+    val alreadyMember: Boolean,
 )
 
 data class JoinInviteRequest(

@@ -42,7 +42,7 @@ class MeProfileTest {
             }.andExpect { status { isOk() } }.andReturn().response.contentAsString,
         )
         assertEquals(login.userId, meBefore.userId)
-        assertEquals("8999", meBefore.nickname)
+        assertEquals("momo-8999", meBefore.nickname)
 
         val patched: MeResponse = mapper.readValue(
             mockMvc.patch("/me") {

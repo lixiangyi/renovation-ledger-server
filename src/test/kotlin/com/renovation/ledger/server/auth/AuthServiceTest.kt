@@ -18,8 +18,8 @@ class AuthServiceTest {
         @Bean
         @Primary
         fun weChatClient(): WeChatClient = StubWeChatClient(
-            openidFor = { "mp_openid_1" },
-            unionid = "union_1",
+            openidFor = { code -> "mp_openid_$code" },
+            unionid = null,
         )
     }
 
@@ -27,9 +27,11 @@ class AuthServiceTest {
 
     @Test
     fun wechatLoginTwiceSameOpenidSameUser() {
-        val first = authService.loginWeChat(WeChatLoginRequest(code = "c1", client = "mp"))
-        val second = authService.loginWeChat(WeChatLoginRequest(code = "c2", client = "mp"))
+        val first = authService.loginWeChat(WeChatLoginRequest(code = "nick_c1", client = "mp"))
+        val second = authService.loginWeChat(WeChatLoginRequest(code = "nick_c1", client = "mp"))
         assertEquals(first.userId, second.userId)
         assertNotNull(first.token)
+        assertEquals("momo-k_c1", first.nickname)
+        assertEquals(first.nickname, second.nickname)
     }
 }

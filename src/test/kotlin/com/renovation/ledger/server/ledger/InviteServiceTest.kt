@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Primary
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
 
 @SpringBootTest
@@ -105,6 +106,48 @@ class InviteServiceTest {
             }.andExpect { status { isOk() } }.andReturn().response.contentAsString,
         )
         assertEquals(2, members.size)
+    }
+
+    @Test
+    fun previewReturnsOwnerAndLedgerWithoutJoining() {
+        val owner = login("inv_prev_o")
+        val editor = login("inv_prev_e")
+        val ledger = import(owner, "p_prev")
+        mockMvc.patch("/me") {
+            header("Authorization", "Bearer $owner")
+            contentType = MediaType.APPLICATION_JSON
+            content = """{"nickname":"小明"}"""
+        }.andExpect { status { isOk() } }
+        val invite = createInvite(owner, ledger.id)
+        val json = mockMvc.get("/invites/${invite.code}/preview") {
+            header("Authorization", "Bearer $editor")
+        }.andExpect { status { isOk() } }.andReturn().response.contentAsString
+        val preview: InvitePreviewDto = mapper.readValue(json)
+        assertEquals(invite.code, preview.code)
+        assertEquals(ledger.id, preview.ledgerId)
+        assertEquals(ledger.name, preview.ledgerName)
+        assertEquals("小明", preview.ownerNickname)
+        assertEquals(false, preview.alreadyMember)
+        val membersBeforeJoin: List<MemberDto> = mapper.readValue(
+            mockMvc.get("/ledgers/${ledger.id}/members") {
+                header("Authorization", "Bearer $owner")
+            }.andExpect { status { isOk() } }.andReturn().response.contentAsString,
+        )
+        assertEquals(1, membersBeforeJoin.size)
+    }
+
+    @Test
+    fun previewExpiredIs410() {
+        val owner = login("inv_prev_exp_o")
+        val editor = login("inv_prev_exp_e")
+        val ledger = import(owner, "p_prev_exp")
+        val invite = createInvite(owner, ledger.id)
+        val entity = invites.findByCode(invite.code)!!
+        entity.expiresAt = java.time.Instant.now().minusSeconds(60)
+        invites.save(entity)
+        mockMvc.get("/invites/${invite.code}/preview") {
+            header("Authorization", "Bearer $editor")
+        }.andExpect { status { isGone() } }
     }
 
     private fun login(code: String): String {

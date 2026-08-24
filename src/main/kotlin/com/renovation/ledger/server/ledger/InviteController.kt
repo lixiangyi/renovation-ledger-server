@@ -22,6 +22,9 @@ class InviteController(
     @PostMapping("/invites/join")
     fun join(@RequestBody request: JoinInviteRequest): LedgerSnapshot = inviteService.join(request)
 
+    @GetMapping("/invites/{code}/preview")
+    fun preview(@PathVariable code: String): InvitePreviewDto = inviteService.preview(code)
+
     @GetMapping("/ledgers/{id}/members")
     fun members(@PathVariable id: String): List<MemberDto> = inviteService.listMembers(id)
 }

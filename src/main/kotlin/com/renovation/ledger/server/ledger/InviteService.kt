@@ -14,6 +14,7 @@ class InviteService(
     private val invites: InviteRepository,
     private val members: LedgerMemberRepository,
     private val users: UserRepository,
+    private val ledgers: LedgerRepository,
 ) {
     private val alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
@@ -44,14 +45,33 @@ class InviteService(
         invites.save(invite)
     }
 
+    fun preview(code: String): InvitePreviewDto {
+        val userId = ledgerService.currentUserId()
+        val invite = requireValidInvite(code)
+        val ledger = ledgers.findById(invite.ledgerId).orElse(null)
+            ?: throw ApiException(410, "GONE", "邀请已失效")
+        if (ledger.deletedAt != null) {
+            throw ApiException(410, "GONE", "邀请已失效")
+        }
+        val ownerMember = members.findAllByLedgerId(invite.ledgerId)
+            .firstOrNull { it.role.equals("OWNER", ignoreCase = true) }
+        val ownerNickname = ownerMember?.let { m ->
+            users.findById(m.userId).orElse(null)?.nickname?.takeIf { it.isNotBlank() }
+        } ?: "账本拥有者"
+        val alreadyMember = members.findByLedgerIdAndUserId(invite.ledgerId, userId) != null
+        return InvitePreviewDto(
+            code = invite.code,
+            ledgerId = ledger.id,
+            ledgerName = ledger.name,
+            ownerNickname = ownerNickname,
+            alreadyMember = alreadyMember,
+        )
+    }
+
     @Transactional
     fun join(request: JoinInviteRequest): LedgerSnapshot {
         val userId = ledgerService.currentUserId()
-        val invite = invites.findByCode(request.code)
-            ?: throw ApiException(410, "GONE", "邀请已失效")
-        if (invite.revokedAt != null || invite.expiresAt.isBefore(Instant.now())) {
-            throw ApiException(410, "GONE", "邀请已失效")
-        }
+        val invite = requireValidInvite(request.code)
         val existing = members.findByLedgerIdAndUserId(invite.ledgerId, userId)
         if (existing == null) {
             members.save(
@@ -71,6 +91,15 @@ class InviteService(
             val nick = users.findById(m.userId).orElse(null)?.nickname ?: "我"
             MemberDto(userId = m.userId, nickname = nick, role = m.role)
         }
+    }
+
+    private fun requireValidInvite(code: String): InviteEntity {
+        val invite = invites.findByCode(code.trim())
+            ?: throw ApiException(410, "GONE", "邀请已失效")
+        if (invite.revokedAt != null || invite.expiresAt.isBefore(Instant.now())) {
+            throw ApiException(410, "GONE", "邀请已失效")
+        }
+        return invite
     }
 
     private fun generateCode(): String {
