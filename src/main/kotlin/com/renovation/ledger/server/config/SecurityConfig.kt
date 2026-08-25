@@ -28,6 +28,7 @@ class SecurityConfig(
                     "/auth/dev-login",
                     "/auth/sms/send",
                     "/auth/sms/login",
+                    "/avatars/**",
                     "/error",
                 ).permitAll()
                     .anyRequest().authenticated()

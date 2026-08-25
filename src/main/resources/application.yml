@@ -8,11 +8,18 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
 app:
   jwt-secret: "change-me-to-32-bytes-min-secret-key!!"
   jwt-days: 30
   dev-sms-code: "000000"
   dev-login-enabled: false
+  avatar:
+    dir: ./data/avatars
+    max-bytes: 2097152
   sms:
     return-code-in-response: false
     ttl-seconds: 300

@@ -11,6 +11,9 @@ app:
   jwt-secret: "test-secret-key-which-is-at-least-32b"
   dev-sms-code: "000000"
   dev-login-enabled: true
+  avatar:
+    dir: ./build/test-avatars
+    max-bytes: 2097152
   sms:
     return-code-in-response: true
     ttl-seconds: 300

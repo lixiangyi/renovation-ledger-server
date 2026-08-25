@@ -10,6 +10,7 @@ data class AuthResponse(
     val token: String,
     val nickname: String,
     val phone: String? = null,
+    val avatarUrl: String? = null,
 )
 
 data class BindPhoneRequest(
@@ -35,6 +36,7 @@ data class MeResponse(
     val userId: String,
     val nickname: String,
     val phone: String? = null,
+    val avatarUrl: String? = null,
 )
 
 data class UpdateMeRequest(

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class AuthService(
@@ -19,6 +20,7 @@ class AuthService(
     private val identities: UserIdentityRepository,
     private val jwtService: JwtService,
     private val smsCodeStore: SmsCodeStore,
+    private val avatarStorage: AvatarStorageService,
     @Value("\${app.dev-login-enabled:false}") private val devLoginEnabled: Boolean,
     @Value("\${app.sms.return-code-in-response:false}") private val returnCodeInResponse: Boolean,
     @Value("\${app.sms.ttl-seconds:300}") private val smsTtlSeconds: Long,
@@ -140,6 +142,29 @@ class AuthService(
         return toMe(user)
     }
 
+    @Transactional
+    fun updateAvatar(file: MultipartFile): MeResponse {
+        val user = currentUser()
+        val nextUrl = avatarStorage.save(file)
+        val oldUrl = user.avatarUrl
+        user.avatarUrl = nextUrl
+        users.save(user)
+        if (oldUrl != null && oldUrl != nextUrl) {
+            avatarStorage.deleteByUrl(oldUrl)
+        }
+        return toMe(user)
+    }
+
+    @Transactional
+    fun clearAvatar(): MeResponse {
+        val user = currentUser()
+        val oldUrl = user.avatarUrl
+        user.avatarUrl = null
+        users.save(user)
+        avatarStorage.deleteByUrl(oldUrl)
+        return toMe(user)
+    }
+
     private fun currentUser(): UserEntity {
         val userId = SecurityContextHolder.getContext().authentication?.name
             ?: throw ApiException(401, "UNAUTHENTICATED", "请重新登录")
@@ -156,6 +181,7 @@ class AuthService(
             token = jwtService.create(user.id),
             nickname = user.nickname,
             phone = user.phone,
+            avatarUrl = user.avatarUrl,
         )
 
     private fun toMe(user: UserEntity): MeResponse =
@@ -163,5 +189,6 @@ class AuthService(
             userId = user.id,
             nickname = user.nickname,
             phone = user.phone,
+            avatarUrl = user.avatarUrl,
         )
 }
