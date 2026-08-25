@@ -9,6 +9,8 @@
 
 客户端**未登录也能本地记账**；登录后通过本服务把账本同步到云端，并按成员权限决定谁能看到哪本账。
 
+界面截图见 [Android README · 界面预览](https://github.com/lixiangyi/renovation-ledger#界面预览)。
+
 ---
 
 ## 提供什么
