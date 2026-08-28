@@ -66,6 +66,7 @@ cd renovation-ledger-server
 - `WECHAT_MP_APP_ID` / `WECHAT_MP_SECRET`（小程序）
 - `WECHAT_APP_APP_ID` / `WECHAT_APP_SECRET`（Android 开放平台）
 - 短信网关相关项（开发环境可用 `app.dev-sms-code`，勿用于生产）
+- 云测试实例使用 `cloud-test` profile（`application-cloud-test.yml`）：发验证码接口会把验证码写进响应，方便客户端自动填入。正式环境保持 `app.sms.return-code-in-response: false`。
 
 `./gradlew test` 跑单元 / 接口测试。
 

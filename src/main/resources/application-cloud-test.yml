@@ -1,0 +1,4 @@
+app:
+  sms:
+    return-code-in-response: true
+  dev-login-enabled: false
