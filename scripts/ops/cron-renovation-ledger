@@ -1,0 +1,6 @@
+SHELL=/bin/bash
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=""
+
+*/5 * * * * root /opt/renovation-ledger/ops/ledger-healthcheck.sh >/dev/null 2>&1
+17 3 * * * root /opt/renovation-ledger/ops/ledger-pg-backup.sh >>/var/log/ledger-backup.log 2>&1

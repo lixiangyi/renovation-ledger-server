@@ -1,0 +1,23 @@
+/opt/renovation-ledger/logs/*.log
+/opt/renovation-ledger-test/logs/*.log {
+	daily
+	missingok
+	rotate 14
+	compress
+	delaycompress
+	notifempty
+	copytruncate
+}
+
+/var/log/ledger-health.log
+/var/log/ledger-backup.log {
+	daily
+	su root syslog
+	missingok
+	rotate 14
+	compress
+	delaycompress
+	notifempty
+	create 0640 root adm
+	copytruncate
+}
