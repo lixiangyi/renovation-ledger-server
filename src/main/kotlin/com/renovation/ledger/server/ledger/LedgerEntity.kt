@@ -13,6 +13,6 @@ class LedgerEntity(
     var name: String = "",
     var revision: Long = 0,
     var ownerUserId: String = "",
-    var createdAt: Instant = Instant.now(),
+    var createdAt: Instant? = Instant.now(),
     var deletedAt: Instant? = null,
 )

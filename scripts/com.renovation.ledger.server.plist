@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.renovation.ledger.server</string>
+  <key>WorkingDirectory</key>
+  <string>/Users/beike/Projects/renovation-ledger-server</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>/Users/beike/Projects/renovation-ledger-server/scripts/run-local.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>JAVA_HOME</key>
+    <string>/Applications/Android Studio.app/Contents/jbr/Contents/Home</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>StandardOutPath</key>
+  <string>/Users/beike/Projects/renovation-ledger-server/logs/launchd.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/beike/Projects/renovation-ledger-server/logs/launchd.err.log</string>
+</dict>
+</plist>

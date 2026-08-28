@@ -99,7 +99,7 @@ class LedgerService(
                 name = ledger.name,
                 role = member.role,
                 revision = ledger.revision,
-                createdAtEpochMs = ledger.createdAt.toEpochMilli(),
+                createdAtEpochMs = ledger.createdAt?.toEpochMilli() ?: 0L,
             )
         }.sortedBy { it.createdAtEpochMs }
     }

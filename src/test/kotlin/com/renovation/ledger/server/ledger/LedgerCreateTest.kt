@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.http.MediaType
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
@@ -32,6 +33,7 @@ class LedgerCreateTest {
 
     @Autowired lateinit var mockMvc: MockMvc
     @Autowired lateinit var mapper: ObjectMapper
+    @Autowired lateinit var jdbcTemplate: JdbcTemplate
 
     @Test
     fun createEmptyLedgerThenGet() {
@@ -53,6 +55,28 @@ class LedgerCreateTest {
         assertEquals(1, list.size)
         assertEquals(created.id, list[0].id)
         org.junit.jupiter.api.Assertions.assertTrue(list[0].createdAtEpochMs > 0)
+    }
+
+    @Test
+    fun listLedgersWhenCreatedAtNullReturns200() {
+        val token = login("nullCreatedAt")
+        val created = mapper.readValue<LedgerSnapshot>(
+            mockMvc.post("/ledgers") {
+                header("Authorization", "Bearer $token")
+                contentType = MediaType.APPLICATION_JSON
+                content = mapper.writeValueAsString(
+                    CreateLedgerRequest(name = "旧本", localId = "local_null_created"),
+                )
+            }.andExpect { status { isOk() } }.andReturn().response.contentAsString,
+        )
+        val updated = jdbcTemplate.update("UPDATE ledgers SET created_at = NULL WHERE id = ?", created.id)
+        assertEquals(1, updated)
+        val listJson = mockMvc.get("/ledgers") {
+            header("Authorization", "Bearer $token")
+        }.andExpect { status { isOk() } }.andReturn().response.contentAsString
+        val list: List<LedgerSummaryDto> = mapper.readValue(listJson)
+        val row = list.first { it.id == created.id }
+        assertEquals("旧本", row.name)
     }
 
     @Test
